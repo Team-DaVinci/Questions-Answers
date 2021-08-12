@@ -9,6 +9,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   define: {
     timestamps: false
   },
+  logging: false,
   pool: {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,

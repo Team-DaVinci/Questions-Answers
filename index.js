@@ -1,5 +1,6 @@
 const express = require("express");
-const product = require("./controller/product");
+const product = require("./controller/product.js");
+
 
 const app = express();
 
@@ -13,19 +14,43 @@ const db = require("./model");
 db.sequelize.sync();
 
 // simple route
-app.get("/createProduct", async (req, res) => {
-  // for (let i = 1; i < 1000012; i++) {
-  //   await product.createProduct({
-  //       id: i
-  //   })
 
-
-  // }
-  res.send(200)
+/////////////////////GET///////////////////////////
+app.get('/productAnswers', async (req, res) => {
+  let result = await product.getQuestionList(5)
+  res.send(result)
 });
 
 
+app.get('/productQuestions', async (req, res) => {
+
+  res.send(200)
+});
+
+///////////////////PUT//////////////////////
+app.put('/questionHelpfulness', async (req, res) => {
+
+});
+
+app.put('/answerHelpfulness', async (req, res) => {
+
+});
+
+app.put('/answerReport', async (req, res) => {
+
+});
+///////////////////POST//////////////////////
+app.post('/addQuestion', async (req, res) => {
+
+});
+
+app.post('/addAnswer', async (req, res) => {
+
+});
+
+/////////////////
+
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
+  console.log(`Server is running on port ${PORT}.`);
 });
