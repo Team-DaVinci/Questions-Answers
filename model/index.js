@@ -29,7 +29,7 @@ db.answer = require('./answer.js')(sequelize, Sequelize);
 db.photo = require('./photo.js')(sequelize, Sequelize);
 
 
-db.product.hasMany(db.question, { as: 'questions' });
+db.product.hasMany(db.question, { as: 'results' });
 
 db.question.belongsTo(db.product, {
   foreignKey: 'productId',

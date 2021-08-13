@@ -2,17 +2,21 @@ module.exports = (sequelize, DataTypes) => {
   const Question = sequelize.define('question', {
 
     id: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      primaryKey: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
     body: {
       type: DataTypes.STRING,
-      
+
     },
     date: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
+      get() {
+        const dateVal = this.getDataValue('date');
+        return dateVal ? new Date(Number(dateVal)).toISOString() : null;
 
+      }
     },
     name: {
       type: DataTypes.STRING,
@@ -23,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
 
     },
     helpfulness: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
 
     },
     reported: {
-      type: DataTypes.STRING,
+      type: DataTypes.BOOLEAN,
 
     }
   });

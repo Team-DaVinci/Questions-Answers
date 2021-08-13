@@ -7,35 +7,33 @@ const Photo = db.photo;
 
 exports.getQuestionList = async (productId, page = 1, count = 5) => {
 
-  return await Product.findAndCountAll({
-
+  let result =  await Product.findAndCountAll({
     where: { id: productId },
-
     include: [{
       model: Question,
-      as: 'questions',
+      as: 'results',
       limit: count,
       offset: count * (page - 1),
-
-      required: true,
+      attributes: [["id", "question_id"], ["body", "question_body"], ["date", "question_date"], ["helpfulness", "question_helpfulness"], ["name", "asker_name"], "reported"],
 
       include: [{
         model: Answer,
         as: "answers",
         subQuery: false,
-        required: true,
-        separate: true,
+         separate: true,
+        attributes: ["id", "body", "date", ["name", "answerer_name"], "helpfulness"],
 
         include: [{
           model: Photo,
           as: "photos",
           subQuery: false,
-          required: true,
           separate: true,
-
         }]
       }]
-
     }]
   })
+
+
+  return result
 };
+

@@ -3,8 +3,9 @@ module.exports = (sequelize, DataTypes) => {
 
     id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true,
+
     },
     body: {
       type: DataTypes.STRING,
@@ -12,7 +13,13 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     date: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
+      get() {
+        const dateVal = this.getDataValue('date');
+
+        return dateVal ? new Date(Number(dateVal)).toISOString() : null;
+
+      }
 
     },
     name: {
@@ -29,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     reported: {
-      type: DataTypes.STRING,
+      type: DataTypes.BOOLEAN,
 
     }
   });

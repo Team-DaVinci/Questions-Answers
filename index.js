@@ -1,14 +1,12 @@
 const express = require("express");
 const product = require("./controller/product.js");
-
+const question = require("./controller/question.js");
+const answer = require("./controller/answer.js");
 
 const app = express();
 
-
-
 // parse requests of content-type - application/json
 app.use(express.json());
-
 
 const db = require("./model");
 db.sequelize.sync();
@@ -16,39 +14,147 @@ db.sequelize.sync();
 // simple route
 
 /////////////////////GET///////////////////////////
-app.get('/productAnswers', async (req, res) => {
-  let result = await product.getQuestionList(5)
-  res.send(result)
+app.get("/qa/questions/:question_id/answers", async (req, res, next) => {
+  try {
+    if (!(req.params.question_id && !isNaN(req.params.question_id))) {
+      throw new Error("Wrong Id");
+    }
+    const result = await question.getAnswerToQuestion(
+      req.params.question_id,
+      req.query.page,
+      req.query.count
+    );
+    res.status(200).send(result);
+  } catch (err) {
+    next(err);
+  }
 });
 
+app.get("/qa/questions", async (req, res, next) => {
+  try {
+    if (!req.query.product_id) {
+      res.status(400).send("Provide the Prodcut Id");
+    }
 
-app.get('/productQuestions', async (req, res) => {
+    let result = await product.getQuestionList(
+      req.query.product_id,
+      req.query.page,
+      req.query.count
+    );
 
-  res.send(200)
+    results = JSON.parse(JSON.stringify(result));
+    for (let j in results.rows[0].results) {
+      let a = results.rows[0].results[j];
+      a.answers = convertArrayToObject(a.answers, "id");
+
+      for (let i in a.answers) {
+        a.answers[i].photos = a.answers[i].photos.map((item) => item.url);
+      }
+    }
+
+    res.send(results);
+  } catch (err) {
+    next(err);
+  }
 });
+
+const convertArrayToObject = (array, key) => {
+  const initialValue = {};
+  return array.reduce((obj, item) => {
+    return {
+      ...obj,
+      [item[key]]: item,
+    };
+  }, initialValue);
+};
 
 ///////////////////PUT//////////////////////
-app.put('/questionHelpfulness', async (req, res) => {
+app.put("/qa/questions/:question_id/helpful", async (req, res, next) => {
+  try {
+    if (!req.params.question_id)
+      throw new Error("Please provide a question id");
 
+    await question.updateQuestionHelpfulness(req.params.question_id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.put('/answerHelpfulness', async (req, res) => {
+app.put("/qa/questions/:question_id/report", async (req, res, next) => {
+  try {
+    if (!req.params.question_id)
+      throw new Error("Please provide a question id");
 
+    await question.updateQuestionReport(req.params.question_id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.put('/answerReport', async (req, res) => {
+app.put("/qa/answers/:answer_id/helpful", async (req, res, next) => {
+  try {
+    if (!req.params.answer_id) throw new Error("Please provide an answer id");
 
+    await answer.updateAnswerHelpfulness(req.params.answer_id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put("/qa/answers/:answer_id/report", async (req, res, next) => {
+  try {
+    if (!req.params.answer_id) throw new Error("Please provide an answer id");
+
+    await answer.updateAnswerReport(req.params.answer_id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
 });
 ///////////////////POST//////////////////////
-app.post('/addQuestion', async (req, res) => {
+app.post("/qa/questions/:question_id/answers", async (req, res, next) => {
+  try {
+    if (!req.body.body) throw new Error("Please provide a body");
+    if (!req.body.name) throw new Error("Please provide a name");
+    if (!req.body.email) throw new Error("Please provide an email");
+    if (!req.body.question_id) throw new Error("Please provide a question id");
 
+    await answer.createAnswer(
+      req.body.body,
+      req.body.name,
+      req.body.email,
+      req.body.photos,
+      req.params.question_id
+    );
+    res.status(201).send();
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post('/addAnswer', async (req, res) => {
-
+app.post("/qa/questions", async (req, res, next) => {
+  try {
+    await question.createQuestion(
+      req.body.body,
+      req.body.name,
+      req.body.email,
+      req.body.product_id
+    );
+    res.status(201).send();
+  } catch (err) {
+    next(err);
+  }
 });
 
 /////////////////
+/////ERROR Handling
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send(err);
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {
