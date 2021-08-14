@@ -2,7 +2,7 @@ const db = require("../model");
 const Answer = db.answer;
 const Photo = db.photo;
 
-exports.createAnswer = async (body, name, email, photos, questionId) => {
+exports.createAnswer = async (body, name, email, photos = [], questionId) => {
   // console.log(body, name, email, productId)
   let result = await Answer.create({
     name,

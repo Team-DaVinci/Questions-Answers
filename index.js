@@ -30,7 +30,7 @@ app.get("/qa/questions/:question_id/answers", async (req, res, next) => {
   }
 });
 
-app.get("/qa/questions", async (req, res, next) => {
+app.get("/qa/questions", async (req, res) => {
   try {
     if (!req.query.product_id) {
       res.status(400).send("Provide the Prodcut Id");
@@ -42,31 +42,21 @@ app.get("/qa/questions", async (req, res, next) => {
       req.query.count
     );
 
-    results = JSON.parse(JSON.stringify(result));
-    for (let j in results.rows[0].results) {
-      let a = results.rows[0].results[j];
-      a.answers = convertArrayToObject(a.answers, "id");
 
-      for (let i in a.answers) {
-        a.answers[i].photos = a.answers[i].photos.map((item) => item.url);
-      }
-    }
 
-    res.send(results);
+    res.send(result);
   } catch (err) {
     next(err);
   }
+
+
+  // for ( let i = 1; i < 1000012; i++) {
+  //   await product.createProduct({
+  //     id: i
+  //   })
+  // }
 });
 
-const convertArrayToObject = (array, key) => {
-  const initialValue = {};
-  return array.reduce((obj, item) => {
-    return {
-      ...obj,
-      [item[key]]: item,
-    };
-  }, initialValue);
-};
 
 ///////////////////PUT//////////////////////
 app.put("/qa/questions/:question_id/helpful", async (req, res, next) => {
@@ -120,14 +110,14 @@ app.post("/qa/questions/:question_id/answers", async (req, res, next) => {
     if (!req.body.body) throw new Error("Please provide a body");
     if (!req.body.name) throw new Error("Please provide a name");
     if (!req.body.email) throw new Error("Please provide an email");
-    if (!req.body.question_id) throw new Error("Please provide a question id");
+
 
     await answer.createAnswer(
       req.body.body,
       req.body.name,
       req.body.email,
       req.body.photos,
-      req.params.question_id
+      +req.params.question_id
     );
     res.status(201).send();
   } catch (err) {

@@ -1,12 +1,16 @@
 import http from 'k6/http';
 
+
+
 export default function () {
-  var url = 'http://localhost:3000/qa/questions/1/answers';
+  var url = `http://localhost:3000/qa/questions/?question_id=1/answers`;
   var postQuestion = JSON.stringify({
-    body: 'hello',
-    name: 'sadaf',
-    email: 'sadaf@',
-    question_id: req.params.question_id,
+
+    body: 'Test1',
+    name: 'Soph',
+    email: 'Soph@',
+    question_id: 1
+
   });
 
   http.post(url, postQuestion);
