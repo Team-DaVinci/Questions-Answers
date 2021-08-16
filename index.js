@@ -30,7 +30,7 @@ app.get("/qa/questions/:question_id/answers", async (req, res, next) => {
   }
 });
 
-app.get("/qa/questions", async (req, res) => {
+app.get("/qa/questions", async (req, res, next) => {
   try {
     if (!req.query.product_id) {
       res.status(400).send("Provide the Prodcut Id");
@@ -146,7 +146,7 @@ app.use(function (err, req, res, next) {
   res.status(500).send(err);
 });
 
-const PORT = 3000;
+const PORT = 3010;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
