@@ -2,8 +2,10 @@ const express = require("express");
 const product = require("./controller/product.js");
 const question = require("./controller/question.js");
 const answer = require("./controller/answer.js");
+const compression = require('compression')
 
 const app = express();
+app.use(compression());
 
 // parse requests of content-type - application/json
 app.use(express.json());

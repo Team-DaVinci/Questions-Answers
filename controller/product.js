@@ -26,7 +26,7 @@ exports.getQuestionList = async (productId, page = 1, count = 5) => {
         model: Answer,
         as: "answers",
         subQuery: false,
-         separate: true,
+        separate: true,
         attributes: ["id", "body", "date", ["name", "answerer_name"], "helpfulness"],
 
         include: [{
